@@ -1,0 +1,75 @@
+{
+  "pass_rate_pct": 87.5,
+  "n_cases": 8,
+  "use_judge": false,
+  "results": [
+    {
+      "question": "Какой максимальный коэффициент Debt/EBITDA допустим по кредитной политике?",
+      "expected": "answer",
+      "answer": "Максимальный коэффициент Debt/EBITDA, допустим по кредитной политике, не должен превышать 3.0x.",
+      "refused": false,
+      "missing_facts": [],
+      "deterministic_pass": true
+    },
+    {
+      "question": "Какой минимальный коэффициент DSCR должен соблюдать заёмщик?",
+      "expected": "answer",
+      "answer": "Минимальный коэффициент DSCR, который должен соблюдать заёмщик, составляет 1.2.",
+      "refused": false,
+      "missing_facts": [],
+      "deterministic_pass": true
+    },
+    {
+      "question": "Какую долю чистой прибыли заёмщик может направить на дивиденды?",
+      "expected": "answer",
+      "answer": "В документе этого нет.",
+      "refused": true,
+      "missing_facts": [
+        [
+          "50"
+        ]
+      ],
+      "deterministic_pass": false
+    },
+    {
+      "question": "В какой срок заёмщик предоставляет квартальную отчётность?",
+      "expected": "answer",
+      "answer": "Заёмщик предоставляет квартальную отчётность не позднее 45 календарных дней после окончания квартала.",
+      "refused": false,
+      "missing_facts": [],
+      "deterministic_pass": true
+    },
+    {
+      "question": "Что вправе потребовать кредитор при нарушении ковенанта?",
+      "expected": "answer",
+      "answer": "Кредитор вправе потребовать досрочного погашения кредита.",
+      "refused": false,
+      "missing_facts": [],
+      "deterministic_pass": true
+    },
+    {
+      "question": "Что такое ковенантный пакет в кредитной сделке?",
+      "expected": "answer",
+      "answer": "Ковенантный пакет — набор финансовых и нефинансовых обязательств заёмщика, контролируемых кредитором в течение срока действия кредита.",
+      "refused": false,
+      "missing_facts": [],
+      "deterministic_pass": true
+    },
+    {
+      "question": "Какая процентная ставка по кредиту установлена политикой?",
+      "expected": "refuse",
+      "answer": "В документе этого нет.",
+      "refused": true,
+      "missing_facts": [],
+      "deterministic_pass": true
+    },
+    {
+      "question": "Какой максимальный размер кредита предусмотрен политикой?",
+      "expected": "refuse",
+      "answer": "В документе этого нет.",
+      "refused": true,
+      "missing_facts": [],
+      "deterministic_pass": true
+    }
+  ]
+}

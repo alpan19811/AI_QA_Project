@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# DeepEval artifacts
+.deepeval/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Eval results - ignore all EXCEPT the 3 reference reports
+results/*
+!results/01_baseline_40pct.json
+!results/02_rag_first_87pct.json
+!results/03_final_100pct.json

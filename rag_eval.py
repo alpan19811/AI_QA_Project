@@ -64,7 +64,7 @@ def safe_measure(metric, test_case, metric_name: str, attempts: int = 2):
 
 def main():
     print("Строим индекс...")
-    collection, n = build_index(DOCUMENT)
+    conn, n = build_index(DOCUMENT)
     print(f"Чанков: {n}\n")
 
     questions = [
@@ -77,7 +77,7 @@ def main():
     for q in questions:
         print("=" * 70)
         print("ВОПРОС:", q)
-        context = retrieve(collection, q)
+        context = retrieve(conn, q)
         answer = generate(context, q)
         print("ОТВЕТ:", answer, "\n")
 

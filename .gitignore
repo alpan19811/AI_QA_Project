@@ -1,8 +1,6 @@
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
 .pytest_cache/
 .coverage
 htmlcov/
@@ -15,18 +13,25 @@ env/
 # IDE
 .idea/
 .vscode/
-*.swp
-*.swo
 
-# DeepEval artifacts
+# Secrets (на случай переноса кредов из кода в env)
+.env
+
+# DeepEval
 .deepeval/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Eval results - ignore all EXCEPT the 3 reference reports
+# Eval reports: игнорируем всё, кроме эталонной истории
 results/*
 !results/01_baseline_40pct.json
 !results/02_rag_first_87pct.json
 !results/03_final_100pct.json
+!results/04_590p_dense_only_44pct.json
+!results/05_590p_hybrid_v1_60pct.json
+!results/06_590p_hybrid_v2_96pct.json
+
+# Крупные исходные PDF (текст держим в txt, pdf не коммитим)
+documents/*.pdf

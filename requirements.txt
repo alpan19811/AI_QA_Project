@@ -9,3 +9,5 @@ pdfplumber>=0.11.0
 # LLM evaluation
 deepeval>=4.1.0
 
+# Testing
+pytest>=8.0.0

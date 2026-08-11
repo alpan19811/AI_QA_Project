@@ -2,6 +2,7 @@
 
 Цепочка: чанкинг -> эмбеддинги (nomic-embed-text) -> pgvector -> retrieval -> генерация.
 Индекс персистентный: не пересобирается при каждом запуске, строится только при пустой таблице.
+Наблюдаемость: opt-in трейсинг через LangSmith (включается переменными окружения).
 """
 
 import time
@@ -9,9 +10,14 @@ from pathlib import Path
 
 import requests
 import psycopg2
+from dotenv import load_dotenv
+from langsmith import traceable
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from tables_590p import TABLE_SENTENCES
+
+# Секреты из .env (не в git); переменные ОС (например, секреты CI) имеют приоритет
+load_dotenv(Path(__file__).parent / ".env")
 
 OLLAMA_URL = "http://localhost:11434"
 EMBED_MODEL = "nomic-embed-text"
@@ -42,6 +48,7 @@ def load_document() -> str:
 DOCUMENT = load_document()
 
 
+@traceable(name="embedding.nomic-embed-text")
 def get_embedding(text: str) -> list:
     r = requests.post(
         f"{OLLAMA_URL}/api/embeddings",
@@ -96,6 +103,9 @@ def retrieve(conn, question: str, k: int = 3, deep: int = 30) -> str:
     FTS-ветка с OR-семантикой: plainto_tsquery по умолчанию требует ВСЕХ слов
     (AND), из-за чего перефразированные вопросы не находили пункты.
     OR + ts_rank ранжирует по числу совпавших основ.
+
+    Примечание: не декорируем @traceable — psycopg2-коннектор несериализуем
+    для LangSmith. Дочерние спаны get_embedding всё равно отследятся автоматически.
     """
     q_emb = get_embedding(question)
     cur = conn.cursor()
@@ -137,6 +147,7 @@ def retrieve(conn, question: str, k: int = 3, deep: int = 30) -> str:
     return "\n\n".join(contents[d] for d in top_ids)
 
 
+@traceable(name="generation.qwen2.5")
 def generate(context: str, question: str) -> str:
     prompt = (
         "Ответь на вопрос, используя ТОЛЬКО контекст ниже (фрагмент Положения ЦБ РФ 590-П). "
@@ -152,6 +163,24 @@ def generate(context: str, question: str) -> str:
     return r.json()["response"].strip()
 
 
+@traceable(name="rag.pipeline")
+def answer(question: str, k: int = 3) -> dict:
+    """Полный RAG-цикл одним трейсируемым вызовом: retrieve -> generate.
+
+    В LangSmith виден как корневой спан с дочерними:
+      rag.pipeline
+      ├── embedding.nomic-embed-text  (latency ~50-100ms)
+      └── generation.qwen2.5          (latency ~2-4s)
+    """
+    conn = get_connection()
+    try:
+        context = retrieve(conn, question, k=k)
+        result = generate(context, question)
+    finally:
+        conn.close()
+    return {"context": context, "answer": result}
+
+
 if __name__ == "__main__":
     conn = get_connection()
     cur = conn.cursor()
@@ -164,6 +193,7 @@ if __name__ == "__main__":
         t0 = time.time()
         conn, n = build_index(DOCUMENT)
         print(f"Чанков: {n} | время индексации: {time.time() - t0:.0f} сек\n")
+        conn.close()
     else:
         print(f"Используем существующий индекс: {n} чанков\n")
 
@@ -175,5 +205,5 @@ if __name__ == "__main__":
     for q in questions:
         print("=" * 70)
         print("ВОПРОС:", q)
-        context = retrieve(conn, q)
-        print("ОТВЕТ:\n", generate(context, q), "\n")
+        res = answer(q)
+        print("ОТВЕТ:\n", res["answer"], "\n")

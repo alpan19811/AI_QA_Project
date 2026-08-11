@@ -15,3 +15,7 @@ pytest>=8.0.0
 # Analysis & visualization
 pandas>=2.2.0
 matplotlib>=3.9.0
+
+# Env / Observability
+python-dotenv>=1.0.0
+langsmith>=0.1.0

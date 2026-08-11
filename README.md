@@ -42,6 +42,14 @@ Fully local (Ollama), no API keys, no data leakage — suitable for regulated en
 - **LLM-as-a-Judge:** DeepEval (Faithfulness, Answer Relevancy)
 - **Python:** requests, psycopg2-binary, pdfplumber
 
+## Observability (opt-in)
+
+- LangSmith tracing via `@traceable` spans: `embedding.nomic-embed-text`, `generation.qwen2.5`, root `rag.pipeline`.
+- Disabled by default (fully-local mode preserved); enabled via `.env` (template: `.env.example`):
+  `LANGSMITH_TRACING`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT`.
+- OS env vars take precedence over `.env` — CI secrets override the local file.
+- Measured on CPU: cold start ~136s, warm 22–56s per request (generation-bound) — the baseline for capacity planning.
+
 ## Prerequisites
 
 - Python 3.11+, Docker Desktop, Ollama
